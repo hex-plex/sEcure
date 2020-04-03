@@ -4,7 +4,7 @@ import sqlite3 as sq
 import time
 import os
 import crypt as cry
-
+import pyautogui as gu
 
 port=""
 dataBase="myData.db"
@@ -53,6 +53,9 @@ def fetch(name):
         crypt=cursor[0][0]
         sq.close()
         key = r.read()
+        if key=="o":
+            print("We couldn't detect your key within 10secs")
+            return "Failed"
         ans=cry.deXor(key,crypt)
         if(ans=="Failed"):
             print("A Wrong Key is been in put as it Failed unlocking")
@@ -60,14 +63,33 @@ def fetch(name):
         else:
             return ans
     except:
-        print("there was a problem fetching your data")
+        print("there was a problem fetching your data!")
         return "Failed"
 
 
+def typein(query=""):
+    if query=="":
+        print("Hello please input the website you want to unlock?")
+        query=input()
+    print("Your query is being proccess please tap the key within 10 secs.")
+    text=fetch(query)
+    if(text=="Failed"):
+        print("There was some error that occured while processing")
+        print("do you want to retry [y/n]:")
+        ans=input()
+        if(ans=="y" or ans=="Y" or ans.lower()=="yes"):
+            typein(query)
+        return False
+    else:
+        print("Please keep the cursor in place")
+        gu.write(text)
+        gu.press('enter')
+    del text
+    print("The password is been succcess recovered")
+    print(" If the login failed please update the correct password" )
+    return True
 
-
-
-if os.path.isFile(os.getcwd()+"/"+dataBase):
+if os.path.isfile(os.getcwd()+"/"+dataBase):
     print("Database Found!")
 else:
     if newtable():
